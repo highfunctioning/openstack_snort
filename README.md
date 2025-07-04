@@ -129,15 +129,13 @@ whose private key is connected with the instances by the OpenStack using key/pai
 7
 
 ## 3.2 Launching the Attack:
-Attack Tool: We used hping3, a network tool for crafting and analyzing TCP/IP packets, to simulate a
-TCP SYN flood attack.
-Attack Description: We used TCP SYN flood attack which falls under the category of Denial-ofService attack. TCP uses 3-way handshake mechanism to establish a connection between a client and
-a server which follows a SYN, SYN-ACK, ACK packets in the order. Now to perform the attack, we
-used hping3 to continuously flood the server (victim in this case) with SYN packets without waiting
-to reply for these packets which eventually increased the load on server and denied the server from
-serving the requests from any other source.
-SYN Flood: From the attacker instance, we executed hping3 to generate a high volume of SYN
-packets targeting the victim instance.
+
+Attack Tool: We used hping3, a network tool for crafting and analyzing TCP/IP packets, to simulate a TCP SYN flood attack.
+
+Attack Description: We used TCP SYN flood attack which falls under the category of Denial-ofService attack. TCP uses 3-way handshake mechanism to establish a connection between a client and a server which follows a SYN, SYN-ACK, ACK packets in the order. Now to perform the attack, we used hping3 to continuously flood the server (victim in this case) with SYN packets without waiting
+to reply for these packets which eventually increased the load on server and denied the server from serving the requests from any other source.
+SYN Flood: From the attacker instance, we executed hping3 to generate a high volume of SYN packets targeting the victim instance.
+
 In the above figure:
 • -S flag is used to specify hping3 to send only SYN packets to target 10.0.0.39
 • -p is used to specify port which is 80
@@ -146,24 +144,30 @@ In the above figure:
 waiting for replies.
 From the above figure we can see that the attack was launched successfully from the attacker’s instance
 to the victim’s instance.
+
 4.0 Detection Scenario:
+
 Step 1: Installation of Prerequisites
 We updated our system and installed necessary tools and libraries such as build-essential, libpcap-dev,
 libpcre3-dev, libdumbnet-dev, zlib1g-dev, bison, flex, and libssl-dev [6].
+
 Step 2: Installation of DAQ (Data Acquisition library)
 We installed the DAQ source code from the official Snort website, extracted the tar file, compiled and
 installed DAQ on our victim instance. [6]
+
 Step 3: Installation of Snort
 We downloaded the Snort source code, extracted it, and configured the installation with the --enablesourcefire option. Then we compiled and installed Snort.
-8
+
 Step 4: Configure Snort
 We then created the necessary directories for Snort, such as /etc/snort, /etc/snort/rules,
 /etc/snort/preproc_rules, /var/log/snort, and /usr/local/lib/snort_dynamicrules and set up a user and
 group for Snort, and change the ownership of these directories to the Snort user [6].
 We edited the Snort configuration file located at /etc/snort/snort.conf to define paths, network variables,
 and rules according to our network setup.
+
 Step 5: Test and Run Snort
 We validated the Snort configuration using the command to check for any errors.
+
 Step 6: Create and Manage Rules
 We created our own custom rules in the /etc/snort/rules/local.rules directory [6].
 The above SNORT rule listensfor any tcp SYN packets coming from any source ip addressto the victim
@@ -171,13 +175,16 @@ on port 80 and starts alerting the victim when it detects packet count of 100 or
 respective alert message.
 The above command enable SNORT to listen for incoming packet traffic on interface ‘ens3’ and outputs
 alert messages if any on console.
-9
+
 The above figure displays the alert messages of Snort we received when we performed the attack
 described on the victim instance. Snort successfully detected the TCP SYN flood attack.
-5.0 Challenges and Solution
+
+## 5.0 Challenges and Solution
 During the initial setup of the OpenStack environment, we encountered several issues that required a
 shift in the approach to successfully deploy and configure the cloud infrastructure.
+
 5.1. Initial Setup Challenges with CentOS:
+
 The initial goal of our project was to install OpenStack on CentOS in a VirtualBox environment.
 However, we soon encountered a major compatibility issue: CentOS could not support the network
 infrastructure required for OpenStack, mainly due to handling network services
@@ -196,7 +203,7 @@ both OpenStack and DevStack. Ubuntu's network management tools are closely align
 OpenStack's requirements, allowing deployment to continue without the network configuration issues
 we encountered with CentOS
 
-5.2. Challenges with Glance Image and Snort Installation:
+# 5.2. Challenges with Glance Image and Snort Installation:
 
 Having successfully switched to Ubuntu, we ran into another set-up problem. Initially, we used CirrOS
 images in Glance for our examples. Although CirrOS is lightweight and useful for rapid testing, both
@@ -207,7 +214,7 @@ failures in the system. To overcome this, we switched to the Ubuntu 16.04 Xenial
 the necessary compatibility and enabled Snort to install and configure correctly.
 
 
-5.3. Multi-Node Deployment Challenges:
+# 5.3. Multi-Node Deployment Challenges:
 
 In our efforts to create a more scalable OpenStack environment, we also tested a three-node deployment
 on VirtualBox, with separate VMs for the controller, and two compute nodes. The installation process
@@ -217,7 +224,7 @@ After exhausting troubleshooting options, we decided to simplify our setup by re
 features without the complexities of a multi-node setup.
 
 
-5.4. DNS Resolution Problems: 
+# 5.4. DNS Resolution Problems: 
 
 After we were able to successfully take the remote access of the
 attacker and victim server instances using SSH we were faces with yet another challenge.
@@ -226,7 +233,7 @@ command was failing but ping request to an IP was getting successful. So, the is
 resolution as shown in below figure.
 We changed the nameserver specified in the /etc/resolv.conf file to 1.1.1.1 and 1.0.0.1 which are
 mapped to the public DNS servers of Cloudflare and it solved our issue as shown in the figure below:
-11
+
 
 ##  APPENDIX
 7.1. Installation of Bobcat, OpenStack 2023.2
